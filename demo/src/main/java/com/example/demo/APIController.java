@@ -2,6 +2,7 @@ package com.example.demo;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.Random;
 
@@ -14,7 +15,7 @@ import java.util.Map;
 public class APIController {
     @CrossOrigin
     @GetMapping("/flights")
-    public List<Map<String, String>> getFlights() {
+    public List<Map<String, String>> getFlights(@RequestParam(required = false) String from) {
         Map<String, String> flight1 = new HashMap<>();
         flight1.put("id", "1");
         flight1.put("from", "Tallinn");
@@ -50,18 +51,29 @@ public class APIController {
 
     @CrossOrigin
     @GetMapping("/seats")
-    public List<Map<String, Integer>> getSeats() {
+    public List<Map<String, Integer>> getSeats(@RequestParam(required = false) boolean suggestWindowSeat) {
         Random seatTaken = new Random();
-        
+        boolean suggestSeatFound = false;
+
         List<Map<String, Integer>> seats = new ArrayList<>();
         for (int i = 1; i <= 100; i++) {
-            int randomSeat = seatTaken.nextInt(2);
+            int isTaken = seatTaken.nextInt(2);
             Map<String, Integer> seat = new HashMap<>();
             seat.put("id", i);
-            if (i % 4 == 0 || (i - 1) % 4 == 0) {
+
+            boolean isByWindow = i % 4 == 0 || (i - 1) % 4 == 0;
+
+            if (isByWindow) {
                 seat.put("isByWindow", 1);
             }
-            seat.put("isTaken", randomSeat);
+
+            if (isTaken == 0 & !suggestSeatFound & (!suggestWindowSeat || isByWindow)) {
+                seat.put("isSuggested", 1);
+                suggestSeatFound = true;
+            }
+            
+            seat.put("isTaken", isTaken);
+
             seats.add(seat);
         }
 
