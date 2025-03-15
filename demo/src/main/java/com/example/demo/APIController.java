@@ -58,7 +58,9 @@ public class APIController {
 
     @CrossOrigin
     @GetMapping("/seats")
-    public List<Map<String, Integer>> getSeats(@RequestParam boolean suggestWindowSeat, @RequestParam int numberOfSeats) {
+    public List<Map<String, Integer>> getSeats(@RequestParam int id, @RequestParam boolean suggestWindowSeat, @RequestParam int numberOfSeats) {
+        // TODO: get seats from db by id
+
         Random seatTaken = new Random();
 
         int seatCounter = 0;
